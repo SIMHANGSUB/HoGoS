@@ -59,6 +59,7 @@ void translate_shell()
 	if (kstrcmp(keyboard, "clear")) { sh_clear(); return; }
 	if (kstrcmp(keyboard, "version")) { sh_version(); return; }
 	if (kstrcmp(keyboard, "read")) { sh_HDDread(); return; }
+	if (kstrcmp(keyboard, "write")) { sh_HDDwrite(); return; }
 	
 	kprintf("There is no such command.",++curline, 0);
 }

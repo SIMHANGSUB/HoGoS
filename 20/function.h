@@ -15,7 +15,7 @@ int kstrlen(char*);
 
 // HDD ÇÔ¼ö
 void HDDread(unsigned int, char*);
-void HDDwrite(int, char*);
+void HDDwrite(unsigned int, char*);
 unsigned char HDDstatus();
 int HDD_BSY();
 int HDD_DRDY();

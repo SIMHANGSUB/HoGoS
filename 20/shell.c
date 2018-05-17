@@ -22,3 +22,13 @@ void sh_HDDread()
 	HDDread(1, diskbuffer);
 	kprintf(diskbuffer, ++curline, 0);
 }
+
+void sh_HDDwrite()
+{
+
+	unsigned char test[512] = "Hello world!";
+
+	HDDwrite(2, test);
+	HDDwrite(3, test);
+
+}
