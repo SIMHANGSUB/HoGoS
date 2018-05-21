@@ -87,3 +87,53 @@ interrupt.c & .h >> Implement the IDT(Interrupt Descript Table) and load them to
 (interrupt will happen but HoGoS do nothing, because idt_ignore() do nothing. But idt_timer() will print the text when interrupt happend and idt_keyboard() will print the text when you tap the keyboard )
 
 Makefile >> Add some command for interrupt.c & .h
+
+final.img >> you can see the result of HoGoS when you run this image in the virtual pc
+
+===================================================================
+
+14. Keyboard driver
+
+HoGoS now receive the keyboard value using keyboard interrupt.
+
+interrupt.c >> Receive the keyboard value called ScanCode, and translate them to ASCII using function "transScan". And print them using "kprint". when user enter the "Backspace", delete one text. 
+
+function.c >> Add the "kprintf_line_clear" which clear the whole text line.
+
+final.img >> you can see the result of HoGoS when you run this image in the virtual pc
+
+===================================================================
+
+16. Shell
+
+Implement the basic Shell which provide the 2 command, clear and version.
+
+main.c >> Make the shell(). Shell() will check the keyboard[] which command line stored. When user tap the keyboard, single text will be stored in keyboard[]. When user finally tap the enter key, Shell() will call the translate_shell() to identify which command user want.
+
+shell.c & .h >> implement the command which HoGoS provide. Also, we have to make if statement in the translate_shell() in main.c
+
+interrupt.c >> In idt_keyboard(), store the single text in keyboard[] when user tap the keyboard.
+
+final.img >> you can see the result of HoGoS when you run this image in the virtual pc
+
+===================================================================
+
+19. Hard Disk Driver - Read
+
+Read the HDD sector. Before run this version, you have to plug in HDD. I implemented this by using Qemu.
+
+function.c >> Implement the function "HDDread". HoGoS now can read a single sector. For example, when you call HDDread(10, buf), Sector 10 in HDD will be stored in buf(512byte)
+
+final.img >> you can see the result of HoGoS when you run this image in the virtual pc
+
+===================================================================
+
+20. Hard Disk Driver - Write
+
+Write the HDD sector. Logic is same as version 19.
+
+function.c >> Implement the function "HDDwrite". HoGoS now can write a single sector. For example, when you call HDDwrite(10, buf), buf(512byte) will be printed to sector 10 in HDD. You can test this function when you command "write" to HoGoS shell. It will print "Hello world" to sector 2 and 3 ( Please see sh_HDDwrite in shell.c )
+
+final.img >> you can see the result of HoGoS when you run this image in the virtual pc
+
+===================================================================
