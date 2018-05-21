@@ -37,3 +37,32 @@ disk.img > you can see the result of HoGoS when you run this image in the virtua
 
 ===================================================================
 
+6. Make function in assembly
+
+Make the "print" function just for fun. Now you can print the whole text line with that function.
+
+Sector2.asm > Add the function called "printf"
+
+
+disk.img > you can see the result of HoGoS when you run this image in the virtual pc.
+
+===================================================================
+
+7. Making OS with C language
+
+You can now make the OS with C language! Look at the file "Makefile" carefully. It will show you how can we develop the OS with C.
+
+From this version, you can simply complile HoGoS with "Make" command.
+
+Boot.asm > Read the 2 sector to load the "main.c". So, "Sector2" loaded in the 0x10000 and "main.c" loaded in the 0x10200.
+
+Sector2.asm > Jump to the 0x10200 where "main.c" will be loaded.
+
+main.c > where the start of the HoGoS implemented by C.
+
+function.c & function.h > Many function will be implemented in this source code. This version, just "kprint" which print the text in the screen implemented.
+
+Makefile > Compile them and merge the whole code into one sigle image which is "final.img"
+
+final.img > you can see the result of HoGoS when you run this image in the virtual pc
+
