@@ -13,6 +13,8 @@ Here is the list of each folder and some description about them.
 
 3. Boot the kernel
 
+Simple OS code which just print the "hiih" in the monitor. 
+
 Boot.asm > Loaded in 0x7C00 by BIOS. read the 1 sector, load it on 0x10000, jump to them.
 Sector2.asm > Print "ih" make sure jump is succeed.
 
@@ -20,9 +22,14 @@ disk.img > you can see the result of HoGoS when you run this image in the virtua
 
 =======================================================================================
 
+5. Switch real mode to protected mode
+
+x86 support the real mode(16bit) but have to switch protected mode(32bit) for better OS.
+
+Boot.asm > Add the GDT(Global Descript Table).
+Sector2.asm > In protected mode(32bit), we can access the memory by using segment offset. Use VideoSegment to print "P".
+
+disk.img > you can see the result of HoGoS when you run this image in the virtual pc.
 
 =======================================================================================
-3. Boot the kernel
-Boot.asm > Loaded in 0x7C00 by BIOS. read the 1 sector, load it on 0x10000, jump to them.Sector2.asm > Print "ih" make sure jump is succeed.
-disk.img > you can see the result of HoGoS when you run this image in the virtual pc.
-=======================================================================================
+
