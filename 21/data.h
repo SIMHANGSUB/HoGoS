@@ -19,7 +19,7 @@ unsigned short kindex;
 unsigned char diskbuffer[sectorsize];
 unsigned char HDDflag;
 
-unsigned short curline; // shell »óÀÇ ÇöÀç ¶óÀÎ
-unsigned short curcol; // shell »óÀÇ ÇöÀç column
+unsigned short curline; // shell ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+unsigned short curcol; // shell ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ column
 
 unsigned int timer;

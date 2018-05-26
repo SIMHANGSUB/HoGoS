@@ -1,17 +1,57 @@
+#include <stdarg.h>
 #include "function.h"
 #include "data.h"
 
-void kprintf(char* str, int line, int col) // str ±ÛÀÚ¸¦ line ¹øÂ° ÁÙ¿¡ Ãâ·ÂÇÏ´Â ÇÔ¼ö
+void kprintf(char* str, int line, int col,...) // str ï¿½ï¿½ï¿½Ú¸ï¿½ line ï¿½ï¿½Â° ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
 {
+
+	va_list va;
+	va_start(va,col);
+
 	char *video = (char*)(0xB8000 + 160 * line + 2*col);
 
 	for (int i = 0; str[i] != 0; i++)
 	{
-		*video++ = str[i];
-		*video++ = 0x03; // Ã¹ Â°´Â ¹è°æ»ö, µÑ ¶§´Â ±ÛÀÚ ÀÚÃ¼ »ö
+		if ( str[i] == '%' )
+			kprintf_arg(((int)va_arg(va,int)), &video);
+
+		else
+		{
+			*video++ = str[i];
+			*video++ = 0x03; // Ã¹ Â°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½
+		}
+	}
+
+	va_end(va);
+
+	return;
+}
+
+void kprintf_arg(int target, char** video)
+{
+	unsigned char buffer[64];
+	int i = 0;
+
+	for( ; target != 0 ; i++)
+	{
+		buffer[i] = '0' + target % 10;
+		target = target / 10;
+	}
+
+	buffer[i] = 0;
+
+	for( i-- ; i >= 0 ; i-- )
+	{
+		**video = buffer[i];
+		(*video)++;
+
+		**video = 0x03;
+		(*video)++;
+
 	}
 
 	return;
+
 }
 
 void kprintf_line_clear(int line, int col)
@@ -49,12 +89,12 @@ int kstrlen(char* str1)
 void HDDwrite(unsigned int sector, char* buffer)
 {
 
-	unsigned char LBA_a = sector & 0xFF; // sectorÀÇ [7:0] ºñÆ® ÃßÃâ
-	unsigned char LBA_b = (sector >> 8) & 0xFF; // sectorÀÇ [15:8] ºñÆ® ÃßÃâ
-	unsigned char LBA_c = (sector >> 16) & 0xFF; // sectorÀÇ [23:16] ºñÆ® ÃßÃâ
-	unsigned char LBA_d = ((sector >> 24) & 0x0F) | 0xE0; // sectorÀÇ [27:24] ºñÆ® ÃßÃâ
+	unsigned char LBA_a = sector & 0xFF; // sectorï¿½ï¿½ [7:0] ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+	unsigned char LBA_b = (sector >> 8) & 0xFF; // sectorï¿½ï¿½ [15:8] ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+	unsigned char LBA_c = (sector >> 16) & 0xFF; // sectorï¿½ï¿½ [23:16] ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+	unsigned char LBA_d = ((sector >> 24) & 0x0F) | 0xE0; // sectorï¿½ï¿½ [27:24] ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
 
-	// HDD INT È°¼ºÈ­
+	// HDD INT È°ï¿½ï¿½È­
 	__asm__ __volatile__
 	(
 		"mov al, 0;"
@@ -62,13 +102,13 @@ void HDDwrite(unsigned int sector, char* buffer)
 		"out dx, al;"
 	);
 
-	while (HDD_BSY() == 1); // HDD°¡ busy ÇÏ´Ù¸é °è¼Ó ´ë±â
+	while (HDD_BSY() == 1); // HDDï¿½ï¿½ busy ï¿½Ï´Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	/////////////////////////////////////////////////
-	// ÇÏµåµð½ºÅ© ¼ÂÆÃ ½ÃÀÛ
+	// ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	/////////////////////////////////////////////////
 
-	// µå¶óÀÌºê/Çìµå ·¹Áö½ºÅÍ ÃÊ±âÈ­ + LBA ÁÖ¼Ò [27:24] 4ºñÆ®
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ + LBA ï¿½Ö¼ï¿½ [27:24] 4ï¿½ï¿½Æ®
 	__asm__ __volatile__
 	(
 		"mov al, %0;"
@@ -81,39 +121,39 @@ void HDDwrite(unsigned int sector, char* buffer)
 		"mov al, 0x01;"
 		"mov dx,0x1F2;"
 		"out dx, al;"
-	); // ¼½ÅÍ 1°³ ¾´´Ù
+	); // ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	__asm__ __volatile__
 	(
 		"mov al, %0;"
 		"mov dx,0x1F3;"
 		"out dx, al;" ::"r"(LBA_a)
-	); // LBA ÁÖ¼Ò [7:0] 8ºñÆ®
+	); // LBA ï¿½Ö¼ï¿½ [7:0] 8ï¿½ï¿½Æ®
 
 	__asm__ __volatile__
 	(
 		"mov al, %0;"
 		"mov dx,0x1F4;"
 		"out dx, al;" ::"r"(LBA_b)
-	); // LBA ÁÖ¼Ò [15:8] 8ºñÆ®
+	); // LBA ï¿½Ö¼ï¿½ [15:8] 8ï¿½ï¿½Æ®
 
 	__asm__ __volatile__
 	(
 		"mov al, %0;"
 		"mov dx,0x1F5;"
 		"out dx, al;" ::"r"(LBA_c)
-	); // LBA ÁÖ¼Ò [23:16] 8ºñÆ®
+	); // LBA ï¿½Ö¼ï¿½ [23:16] 8ï¿½ï¿½Æ®
 
 	   /////////////////////////////////////////////////
-	   // ÇÏµåµð½ºÅ© ¼ÂÆÃ ³¡
+	   // ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 	   /////////////////////////////////////////////////
 
 
-	   // ¾²±â(0x30) ³»¸®±â Àü ÇÏµåµð½ºÅ© µå¶óÀÌ¹ö°¡ ¸í·ÉÀ» ¹ÞÀ» ¼ö ÀÖ´ÂÁö Ã¼Å©
+	   // ï¿½ï¿½ï¿½ï¿½(0x30) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ Ã¼Å©
 	while ((HDD_BSY() == 1) || (HDD_DRDY() == 0));
 
 
-	// ¾²±â(0x30) ¸í·É ³»¸®±â
+	// ï¿½ï¿½ï¿½ï¿½(0x30) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	__asm__ __volatile__
 	(
 		"mov al, 0x30;"
@@ -121,17 +161,17 @@ void HDDwrite(unsigned int sector, char* buffer)
 		"out dx, al;"
 	);
 
-	// ¸í·É ³»·È´Âµ¥ ¿À·ù°¡ ¹ß»ýÇß´Ù¸é ¾²±â¸¦ Áß´ÜÇÑ´Ù.
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½È´Âµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß´Ù¸ï¿½ ï¿½ï¿½ï¿½â¸¦ ï¿½ß´ï¿½ï¿½Ñ´ï¿½.
 	if (HDD_ERR() == 1)
 	{
 		kprintf("Error!!", videomaxline - 1, 0);
 		return;
 	}
 
-	while (HDD_DRQ() == 0); // µ¥ÀÌÅÍ¸¦ ¾µ ¶§±îÁö ´ë±â
+	while (HDD_DRQ() == 0); // ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
-	//  BufferÀÇ 512¹ÙÀÌÆ®¸¸Å­ µ¥ÀÌÅÍ¸¦ ¸Þ¸ð¸®(0x1F0)¿¡ ¾´´Ù
+	//  Bufferï¿½ï¿½ 512ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½Å­ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Þ¸ï¿½ï¿½ï¿½(0x1F0)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	__asm__ __volatile__("mov dx,0x1F0;");
 	__asm__ __volatile__("mov esi, %0;" : : "r"(buffer));
 	__asm__ __volatile__("mov ecx, 256");
@@ -143,12 +183,12 @@ void HDDwrite(unsigned int sector, char* buffer)
 void HDDread(unsigned int sector, char* buffer)
 {
 	
-	unsigned char LBA_a = sector & 0xFF; // sectorÀÇ [7:0] ºñÆ® ÃßÃâ
-	unsigned char LBA_b = ( sector >> 8 ) & 0xFF; // sectorÀÇ [15:8] ºñÆ® ÃßÃâ
-	unsigned char LBA_c = ( sector >> 16) & 0xFF; // sectorÀÇ [23:16] ºñÆ® ÃßÃâ
-	unsigned char LBA_d = ( ( sector >> 24) & 0x0F ) | 0xE0 ; // sectorÀÇ [27:24] ºñÆ® ÃßÃâ
+	unsigned char LBA_a = sector & 0xFF; // sectorï¿½ï¿½ [7:0] ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+	unsigned char LBA_b = ( sector >> 8 ) & 0xFF; // sectorï¿½ï¿½ [15:8] ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+	unsigned char LBA_c = ( sector >> 16) & 0xFF; // sectorï¿½ï¿½ [23:16] ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+	unsigned char LBA_d = ( ( sector >> 24) & 0x0F ) | 0xE0 ; // sectorï¿½ï¿½ [27:24] ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
 
-	// HDD INT È°¼ºÈ­
+	// HDD INT È°ï¿½ï¿½È­
 	__asm__ __volatile__
 	(
 		"mov al, 0;"
@@ -156,13 +196,13 @@ void HDDread(unsigned int sector, char* buffer)
 		"out dx, al;"
 	);
 
-	while ( HDD_BSY() == 1); // HDD°¡ busy ÇÏ´Ù¸é °è¼Ó ´ë±â
+	while ( HDD_BSY() == 1); // HDDï¿½ï¿½ busy ï¿½Ï´Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	
 	/////////////////////////////////////////////////
-	// ÇÏµåµð½ºÅ© ¼ÂÆÃ ½ÃÀÛ
+	// ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	/////////////////////////////////////////////////
 
-	// µå¶óÀÌºê/Çìµå ·¹Áö½ºÅÍ ÃÊ±âÈ­ + LBA ÁÖ¼Ò [27:24] 4ºñÆ®
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ + LBA ï¿½Ö¼ï¿½ [27:24] 4ï¿½ï¿½Æ®
 	__asm__ __volatile__
 	(
 		"mov al, %0;"
@@ -175,39 +215,39 @@ void HDDread(unsigned int sector, char* buffer)
 		"mov al, 0x01;"
 		"mov dx,0x1F2;"
 		"out dx, al;"
-	); // ¼½ÅÍ 1°³ ÀÐ´Â´Ù
+	); // ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ ï¿½Ð´Â´ï¿½
 
 	__asm__ __volatile__
 	(
 		"mov al, %0;"
 		"mov dx,0x1F3;"
 		"out dx, al;" ::"r"(LBA_a)
-	); // LBA ÁÖ¼Ò [7:0] 8ºñÆ®
+	); // LBA ï¿½Ö¼ï¿½ [7:0] 8ï¿½ï¿½Æ®
 
 	__asm__ __volatile__
 	(
 		"mov al, %0;"
 		"mov dx,0x1F4;"
 		"out dx, al;" ::"r"(LBA_b)
-	); // LBA ÁÖ¼Ò [15:8] 8ºñÆ®
+	); // LBA ï¿½Ö¼ï¿½ [15:8] 8ï¿½ï¿½Æ®
 
 	__asm__ __volatile__
 	(
 		"mov al, %0;"
 		"mov dx,0x1F5;"
 		"out dx, al;" ::"r"(LBA_c)
-	); // LBA ÁÖ¼Ò [23:16] 8ºñÆ®
+	); // LBA ï¿½Ö¼ï¿½ [23:16] 8ï¿½ï¿½Æ®
 
 	/////////////////////////////////////////////////
-	// ÇÏµåµð½ºÅ© ¼ÂÆÃ ³¡
+	// ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 	/////////////////////////////////////////////////
 
 
-	// ÀÐ±â(0x20) ³»¸®±â Àü ÇÏµåµð½ºÅ© µå¶óÀÌ¹ö°¡ ¸í·ÉÀ» ¹ÞÀ» ¼ö ÀÖ´ÂÁö Ã¼Å©
+	// ï¿½Ð±ï¿½(0x20) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ Ã¼Å©
 	while ((HDD_BSY() ==1 )|| (HDD_DRDY()==0));
 
 
-	// ÀÐ±â(0x20) ¸í·É ³»¸®±â
+	// ï¿½Ð±ï¿½(0x20) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	__asm__ __volatile__
 	(
 		"mov al, 0x20;"
@@ -215,17 +255,17 @@ void HDDread(unsigned int sector, char* buffer)
 		"out dx, al;"
 	);
 
-	// ¸í·É ³»·È´Âµ¥ ¿À·ù°¡ ¹ß»ýÇß´Ù¸é ÀÐ±â¸¦ Áß´ÜÇÑ´Ù.
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½È´Âµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß´Ù¸ï¿½ ï¿½Ð±â¸¦ ï¿½ß´ï¿½ï¿½Ñ´ï¿½.
 	if (HDD_ERR() == 1)
 	{
 		kprintf("Error!!", videomaxline - 1, 0);
 		return;
 	}
 
-	while (HDD_DRQ() == 0); // µ¥ÀÌÅÍ¸¦ ´Ù ÀÐÀ» ¶§±îÁö ´ë±â
+	while (HDD_DRQ() == 0); // ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
-	// ÀÐ±â°¡ ¼º°øÇßÀ¸¹Ç·Î Buffer¿¡´Ù°¡ 512¹ÙÀÌÆ®¸¸Å­ µ¥ÀÌÅÍ¸¦ ¿Å±ä´Ù.
+	// ï¿½Ð±â°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ Bufferï¿½ï¿½ï¿½Ù°ï¿½ 512ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½Å­ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Å±ï¿½ï¿½ï¿½.
 	__asm__ __volatile__("mov dx,0x1F0;");
 	__asm__ __volatile__("mov edi, %0;" : : "r"(buffer));
 	__asm__ __volatile__("mov ecx, 256");

@@ -1,19 +1,29 @@
 #pragma once
 
+/*
+typedef int __gnuc_va_list;
+typedef __builtin_va_list __gnuc_va_list;
+typedef __gnuc_va_list va_list;
 
-// ºñµð¿À ÇÔ¼ö
-void kprintf(char*, int, int); // str : Ãâ·ÂÇÒ ½ºÆ®¸µ ÁÖ¼Ò , int : ¸î ¹øÂ° ÁÙ¿¡ Ãâ·ÂÇÒ °ÍÀÎÁö, int : ¸î ¹øÂ° Çà¿¡ Ãâ·ÂÇÒ °ÍÀÎÁö
+#define va_start(v,l)   __builtin_va_start(v,l)
+#define va_end(v)   __builtin_va_end(v)
+#define va_arg(v,l) __builtin_va_arg(v,l)
+*/
+
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
+void kprintf(char*, int, int,...); // str : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ö¼ï¿½ , int : ï¿½ï¿½ ï¿½ï¿½Â° ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, int : ï¿½ï¿½ ï¿½ï¿½Â° ï¿½à¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void kprintf_line_clear(int, int);
 void kprintf_clear_all();
 void kprintf_byte(char*, int, int);
 char translate_byte(unsigned char x);
 void kprintf_sector(char*);
+void kprintf_arg(int, char**);
 
-// ½ºÆ®¸µ ÇÔ¼ö
+// ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ô¼ï¿½
 int kstrcmp(char*, char*);
 int kstrlen(char*);
 
-// HDD ÇÔ¼ö
+// HDD ï¿½Ô¼ï¿½
 void HDDread(unsigned int, char*);
 void HDDwrite(unsigned int, char*);
 unsigned char HDDstatus();
@@ -22,4 +32,4 @@ int HDD_DRDY();
 int HDD_DRQ();
 int HDD_ERR();
 
-// ±âÅ¸ ÇÔ¼ö
+// ï¿½ï¿½Å¸ ï¿½Ô¼ï¿½

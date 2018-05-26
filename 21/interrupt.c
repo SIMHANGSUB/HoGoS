@@ -5,7 +5,7 @@
 struct IDT inttable[3];
 struct IDTR idtr = { 256 * 8 - 1,0 };
 
-unsigned char keyt[2] = { 'A', 0 };
+unsigned char keyt[2] = { 'A',0 };
 unsigned char keybuf;
 unsigned int tick;
 
@@ -43,7 +43,7 @@ void init_intdesc()
 
 	}
 
-	// ¹°¸®ÁÖ¼Ò 0x0 ¹øÁö¿¡ ISR ¹èÄ¡ ½ÃÀÛ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ 0x0 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ISR ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
 
 	for (i = 0; i < 256; i++)
 	{
@@ -55,7 +55,7 @@ void init_intdesc()
 
 	}
 
-	// Å¸ÀÌ¸Ó ISR µî·Ï
+	// Å¸ï¿½Ì¸ï¿½ ISR ï¿½ï¿½ï¿½ï¿½
 	{
 		isr = (unsigned short*)(0x0 + 8 * 0x20);
 		*isr = inttable[1].offsetl;
@@ -67,7 +67,7 @@ void init_intdesc()
 		tick = 0;
 	}
 
-	// Å°º¸µå ISR µî·Ï
+	// Å°ï¿½ï¿½ï¿½ï¿½ ISR ï¿½ï¿½ï¿½ï¿½
 
 	{
 		isr = (unsigned short*)(0x0 + 8 * 0x21);
@@ -82,22 +82,22 @@ void init_intdesc()
 			keyboard[i] = 0;
 	}
 
-	// Å°º¸µå ÀÛµ¿
+	// Å°ï¿½ï¿½ï¿½ï¿½ ï¿½Ûµï¿½
 	__asm__ __volatile__
 	(
 		"mov al, 0xAE;"
 		"out 0x64, al;"
 	);
-	//  ÀÎÅÍ·´Æ® ÀÛµ¿ ½ÃÀÛ
+	//  ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½Ûµï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	__asm__ __volatile__("mov eax, %0"::"r"(&idtr));
 	__asm__ __volatile__("lidt [eax]");
 	__asm__ __volatile__
 	(
-		"mov al, 0x00;" //½½·¹ÀÌºê PICÀÇ ¸ðµç ÀÎÅÍ·´Æ®¸¦
-		"out 0xA1, al;" // ¿­¾îµÐ´Ù.
-		"mov al, 0x00;"// ¸¶½ºÅÍ PICÀÇ ¸ðµç ÀÎÅÍ·´Æ®¸¦
-		"out 0x21, al;" //¿­¾îµÐ´Ù
+		"mov al, 0x00;" //ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ PICï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í·ï¿½Æ®ï¿½ï¿½
+		"out 0xA1, al;" // ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½.
+		"mov al, 0x00;"// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ PICï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í·ï¿½Æ®ï¿½ï¿½
+		"out 0x21, al;" //ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½
 	);
 	__asm__ __volatile__("sti");
 
@@ -193,7 +193,7 @@ void idt_keyboard()
 	
 	keybuf = transScan(keybuf);
 
-	if (keybuf == BACKSPACE && kindex != 0) // ¹é½ºÆäÀÌ½º ÀÔ·Â
+	if (keybuf == BACKSPACE && kindex != 0) // ï¿½é½ºï¿½ï¿½ï¿½Ì½ï¿½ ï¿½Ô·ï¿½
 		keyboard[--kindex] = 0;
 	else if (keybuf != 0xFF && keybuf != BACKSPACE)
 		keyboard[kindex++] = keybuf;
@@ -223,7 +223,7 @@ unsigned char transScan(unsigned char target)
 {
 	unsigned char result;
 
-	switch (target) // scan code set 1 ±âÁØ
+	switch (target) // scan code set 1 ï¿½ï¿½ï¿½ï¿½
 	{
 	case 0x1E: result = 'a'; break;
 	case 0x30: result = 'b'; break;
@@ -251,11 +251,11 @@ unsigned char transScan(unsigned char target)
 	case 0x2D: result = 'x'; break;
 	case 0x15: result = 'y'; break;
 	case 0x2C: result = 'z'; break;
-	case 0x39: result = ' '; break; // ½ºÆäÀÌ½º
-	case 0x0E: result = BACKSPACE; break; // ¹é½ºÆäÀÌ½º ¾Æ½ºÅ°ÄÚµå = 8
+	case 0x39: result = ' '; break; // ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½
+	case 0x0E: result = BACKSPACE; break; // ï¿½é½ºï¿½ï¿½ï¿½Ì½ï¿½ ï¿½Æ½ï¿½Å°ï¿½Úµï¿½ = 8
 	case 0x1C: result = ENTER; break; // Enter key
 	default: result = 0xFF; break; 
-		// ±¸Çö¾ÈµÈ °ÍÀº ¹«½ÃÇÑ´Ù. ±¸ºÐÀÚ´Â 0xFF
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ 0xFF
 
 	}
 

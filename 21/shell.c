@@ -32,3 +32,12 @@ void sh_HDDwrite()
 	HDDwrite(3, test);
 
 }
+
+void sh_arg()
+{
+	int test[] = { 12, 345, 6789, 12345 };
+
+	kprintf("Test : % and % and % and % and % ", 
+	++curline, 0, test[0], test[1], test[2], test[3], 3);
+
+}

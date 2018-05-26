@@ -55,11 +55,12 @@ void shell()
 
 void translate_shell()
 {
-	if (keyboard[0] == 0) { return; } // ¸í·É¾î ¾øÀÌ ±×³É ENTER Ä§
+	if (keyboard[0] == 0) { return; } // ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×³ï¿½ ENTER Ä§
 	if (kstrcmp(keyboard, "clear")) { sh_clear(); return; }
 	if (kstrcmp(keyboard, "version")) { sh_version(); return; }
 	if (kstrcmp(keyboard, "read")) { sh_HDDread(); return; }
 	if (kstrcmp(keyboard, "write")) { sh_HDDwrite(); return; }
+	if (kstrcmp(keyboard, "arg")) { sh_arg(); return; }
 	
 	kprintf("There is no such command.",++curline, 0);
 }
