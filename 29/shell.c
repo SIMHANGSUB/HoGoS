@@ -61,6 +61,7 @@ void translate_shell()
 	if (kstrncmp(keyboard, "cd",2)) { sh_cd(); return; }
 	if (kstrncmp(keyboard, "cat",3)) { sh_cat(); return; }
 	if (kstrcmp(keyboard, "alloc")) { sh_alloc(); return; }
+	if (kstrcmp(keyboard, "free")) { sh_free(); return; }
 
 	kprintf("There is no such command.",++curline, 0);
 }
@@ -283,4 +284,10 @@ void sh_cat()
 void sh_alloc()
 {
 	kprintf("alloc 1 block , block number : %d ",++curline,0,Block_alloc());
+}
+
+void sh_free()
+{
+	Block_free(38);
+	kprintf("free 1 block , block number : 38 ",++curline,0);
 }

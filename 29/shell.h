@@ -15,3 +15,4 @@ void sh_ls();
 void sh_cd();
 void sh_cat();
 void sh_alloc();
+void sh_free();

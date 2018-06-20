@@ -245,6 +245,37 @@ unsigned int Block_alloc()
     return result;
 }
 
+void Block_free(unsigned int num)
+{
+    unsigned char bit;
+
+    switch ( num % 8 )
+    {
+        case 0 : bit = ~Bit1; break;
+        case 1 : bit = ~Bit2; break;
+        case 2 : bit = ~Bit3; break;
+        case 3 : bit = ~Bit4; break;
+
+        case 4 : bit = ~Bit5; break;
+        case 5 : bit = ~Bit6; break;
+        case 6 : bit = ~Bit7; break;
+        case 7 : bit = ~Bit8; break;
+    }
+
+    BlockBitmap[num/8] = BlockBitmap[num/8] & bit;
+
+    
+    HDDwrite(groupblock.bg_block_bitmap*2,&BlockBitmap[0]);
+    HDDwrite(groupblock.bg_block_bitmap*2+1,&BlockBitmap[512]);
+
+    superblock.s_free_blocks_count++;
+    groupblock.bg_free_blocks_count++;
+
+    writeSuperblock();
+    writeGroupblock();
+    
+}
+
 unsigned int Inode_alloc()
 {
 
