@@ -122,3 +122,4 @@ void Inode_addr(unsigned int, unsigned int* , unsigned int* );
 
 void mkdir(unsigned int, unsigned char*, unsigned int, unsigned char* );
 void RemoveArrageDir(unsigned int );
+int dirnumber(unsigned int);

@@ -361,11 +361,16 @@ void sh_rm()
 			case 0x8000: // Regular File
 				RemoveArrageDir(inodenum);
 				Inode_free(inodenum);
-				kprintf("Delete %s complete",DEBUG,0,name);
 				break;
 
 			case 0x4000: // Directory
+				if (dirnumber(inodenum) == 2)
+				{
 
+					RemoveArrageDir(inodenum);
+					Inode_free(inodenum);
+				}
+				else kprintf("Folder has some files! Can't remove",++curline,0);
 				break;
 		}
 	}

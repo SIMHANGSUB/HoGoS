@@ -255,6 +255,7 @@ unsigned int Block_alloc()
 void Block_free(unsigned int num)
 {
     unsigned char bit;
+    num--;
 
     switch ( num % 8 )
     {
@@ -353,6 +354,7 @@ void Inode_free(unsigned int num)
 {
     struct INODE target;
     unsigned char bit;
+    num--;
 
     switch ( num % 8 )
     {
@@ -470,41 +472,62 @@ void RemoveArrageDir(unsigned int target)
             kmemcpy(&buffer[base], &inode, 4);
             kmemcpy(&buffer[base + 4], &rlen, 2);
 
-            if ( inode == target )
+            if (inode == target)
             {
-                if ( base + rlen == 1024 )
-                { 
-                  kmemcpy(&buffer[baseP + 4], &temp, 2);
-                  kprintf("Temp : %d ",++curline,0,temp);
+                if (base + rlen == 1024)
+                {
+                    kmemcpy(&buffer[baseP + 4], &temp, 2);
 
-                  temp = temp + rlen;
-                  kmemcpy(&temp,&result[baseP+4],2);
+                    temp = temp + rlen;
+                    kmemcpy(&temp, &result[baseP + 4], 2);
 
-                  kprintf("Last found >> rlen: %d result: %d"
-                  ,++curline,0,temp,rlen,result[baseP+4]);
-                Lastfound = TRUE; }
+                    Lastfound = TRUE;
+                }
+
                 else
-                {   newrlen = rlen; Middlefound = TRUE; }
-                        
+                {
+                    newrlen = rlen;
+                    Middlefound = TRUE;
+                }
             }
             else
             {
                 kmemcpy(&buffer[base], &result[baseR], rlen);
                 baseP = baseR;
                 baseR = baseR + rlen;
-                
             }
         }
 
-        if ( Lastfound || Middlefound )
+        if (Lastfound || Middlefound)
         {
-            if ( Middlefound ) result[baseR-rlen+4] = result[baseR-rlen+4] + newrlen;
+            if (Middlefound)
+                result[baseR - rlen + 4] = result[baseR - rlen + 4] + newrlen;
 
-            HDDwrite(cur.i_block[i]*2,&result[0]);
-            HDDwrite(cur.i_block[i]*2+1,&result[512]);
+            HDDwrite(cur.i_block[i] * 2, &result[0]);
+            HDDwrite(cur.i_block[i] * 2 + 1, &result[512]);
 
             return;
         }
 
     }
+}
+
+int dirnumber(unsigned int inode)
+{
+    struct INODE temp;
+    unsigned char buffer[1024];
+    unsigned short rlen;
+    int i, base, result = 0;
+    findnReadInode(inode,&temp);
+
+    for (i = 0; temp.i_block[i] != 0; i++)
+    {
+        HDDread(temp.i_block[i] * 2, &buffer[0]);
+        HDDread(temp.i_block[i] * 2 + 1, &buffer[512]);
+
+        for (base = 0 ; base < 1024; base = base + rlen)
+            { kmemcpy(&buffer[base + 4], &rlen, 2); result++;}
+    }
+
+    return result;
 }
